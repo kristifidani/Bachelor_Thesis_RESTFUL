@@ -40,6 +40,7 @@ if(errors){
         password:password
     });
 
+    //Pjesa e passwordit qe e inkripton
     bcrypt.genSalt(10, function(err, salt){
         bcrypt.hash(newUser.password, salt, function(err, hash){
             if(err){
