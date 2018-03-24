@@ -9,6 +9,7 @@ const config = require('./config/database');
 const passport = require('passport');
 
 mongoose.connect(config.database);
+mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 
 //Check connection

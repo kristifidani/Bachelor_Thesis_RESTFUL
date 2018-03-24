@@ -4,7 +4,7 @@
   "description": "Simple knowledge base app",
   "main": "app.js",
   "scripts": {
-    "start": "node app"
+    "start": "nodemon app"
   },
   "author": "Kristi Fidani",
   "license": "ISC",
