@@ -13,12 +13,13 @@ html
                         span.icon-bar
                         span.icon-bar
                         span.icon-bar
-                    a.navbar-brand(href='/') KnowledgeBase
+                    header.navbar-brand BookCollection
                 #navbar.collapse.navbar-collapse
                     ul.nav.navbar-nav
-                        li
-                            a(href='/') Home
+                        
                         if user
+                            li
+                                a(href='/articles') Home
                             li
                                 a(href='/articles/add') Add Article
                     ul.nav.navbar-nav.navbar-right
@@ -29,7 +30,7 @@ html
                             li
                                 a(href='/users/register') Register
                             li
-                                a(href='/users/login') Login
+                                a(href='/') Login
         .container
             != messages('message', locals) /*Pjesa e mesazheve add update deri te block content*/
             if errors
