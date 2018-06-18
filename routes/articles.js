@@ -10,7 +10,7 @@ let User = require("../models/user");
 router.get("/", ensureAuthenticated, (req, res) => {
   User.findById(req.user.id, function(err, user) {
     //console.log(user)
-    Article.find({ author: user.name }, function(err, articles) {
+    Article.find({ author: user.username }, function(err, articles) {
       if (err) {
         console.log(err);
       } else {
@@ -30,10 +30,11 @@ router.get("/add", ensureAuthenticated, (req, res) => {
   });
 });
 
-//Add submit post route
+
+//Add article
 router.post("/add", ensureAuthenticated, (req, res) => {
+  
   req.checkBody("title", "Title is required").notEmpty();
-  //req.checkBody('author', 'Author is required').notEmpty();
   req.checkBody("body", "Body is required").notEmpty();
 
   //Get errors
@@ -46,7 +47,7 @@ router.post("/add", ensureAuthenticated, (req, res) => {
   } else {
     let article = new Article();
     article.title = req.body.title;
-    article.author = req.user.name;
+    article.author = req.user.username;
     article.body = req.body.body;
 
     article.save(err => {

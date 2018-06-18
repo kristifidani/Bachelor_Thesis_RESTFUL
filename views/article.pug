@@ -7,7 +7,7 @@ block content
     p= article.body
     hr
     if user
-        if user.name == article.author
+        if user.username == article.author
             a.btn.btn-default(href='/articles/edit/'+article._id) Edit
             a.btn.btn-default.delete-article(href='/articles/delete/'+article._id) Delete
     

@@ -18,12 +18,15 @@ html
                     ul.nav.navbar-nav
                         
                         if user
+                            
                             li
                                 a(href='/articles') Home
                             li
                                 a(href='/articles/add') Add Article
                     ul.nav.navbar-nav.navbar-right
                         if user
+                            li 
+                                a Welcome #{user.name}
                             li 
                                 a(href='/users/logout') Logout
                         else
@@ -40,7 +43,7 @@ html
             br
             hr
             footer
-                p Copyright &copy; 2017
+                p Copyright &copy; 2018
         script(src='/bower_components/jquery/dist/jquery.js')
         script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
      

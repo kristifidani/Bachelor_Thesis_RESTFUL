@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 
-//Bring in Article Model
+//Article Model
 let User = require("../models/user");
 
 //Register form
@@ -19,15 +19,15 @@ router.post("/register", function(req, res) {
   const password = req.body.password;
   const password2 = req.body.password2;
 
-  req.checkBody("name", "Name is required to have between 6 to 15 characters including only letters and digits !"
-    ).matches("[A-Za-z0-9]{6,15}");
+  req.checkBody("name", "Name is required to have at least 6 characters including only letters and digits !"
+    ).matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
   req.checkBody("email", "Email is required").notEmpty();
   req.checkBody("email", "Email is not valid").isEmail();
   req
-    .checkBody("username", "Username is required to have between 6 to 15 characters including only letters and digits !"
-    ).matches("[A-Za-z0-9]{6,15}");
+    .checkBody("username", "Username is required to have at least 6 characters including only letters and digits !"
+    ).matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
   req
-    .checkBody("password", "Password is required to have 6 characters including uppers case, digit and special characters !"
+    .checkBody("password", "Password is required to have at least 6 characters including upper,lower case, digit and accepts special characters !"
     ).matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}$");
   req.checkBody("password2", "Passwords do not match").equals(req.body.password);
 
@@ -41,7 +41,9 @@ router.post("/register", function(req, res) {
       if (err) {
         console.log(err);
       } else if (user) {
-        console.log("user exists");
+        //console.log("user exists");
+        req.flash("danger", "User exists ! Try another username !");
+        res.redirect("/users/register");
         //console.log(user)
       } else {
         let newUser = new User({

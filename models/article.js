@@ -4,7 +4,7 @@ let mongoose = require('mongoose');
 let articleSchema = mongoose.Schema({
     title: {
         type: String,
-        required:true
+        required: true
     },
     author:{
         type: String,
