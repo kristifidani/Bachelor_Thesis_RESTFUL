@@ -13,14 +13,14 @@ html
                         span.icon-bar
                         span.icon-bar
                         span.icon-bar
-                    header.navbar-brand BookCollection
+                   
                 #navbar.collapse.navbar-collapse
                     ul.nav.navbar-nav
-                        
+                        li 
+                            a(href='/') BookCollection  
                         if user
                             
-                            li
-                                a(href='/articles') Home
+                            
                             li
                                 a(href='/articles/add') Add Article
                     ul.nav.navbar-nav.navbar-right
@@ -33,7 +33,7 @@ html
                             li
                                 a(href='/users/register') Register
                             li
-                                a(href='/') Login
+                                a(href='/users/login') Login
         .container
             != messages('message', locals) /*Pjesa e mesazheve add update deri te block content*/
             if errors
@@ -47,3 +47,5 @@ html
         script(src='/bower_components/jquery/dist/jquery.js')
         script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
      
+//-li
+    a(href='/articles') Home posht if users tek book collections siper

@@ -97,7 +97,17 @@ app.use("/users", users);
 
 //Home route
 app.get("/", function(req, res) {
-  res.render("login");
+  Article.find({}, function(err, articles) {
+    if (err) {
+      
+      console.log(err);
+    } else {
+      res.render("index", {
+        title: "Articles",
+        articles: articles
+      });
+    }
+});
 });
 
 //Start Server

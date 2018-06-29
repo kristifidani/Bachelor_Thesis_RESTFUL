@@ -10,7 +10,7 @@ let User = require("../models/user");
 router.get("/", ensureAuthenticated, (req, res) => {
   User.findById(req.user.id, function(err, user) {
     //console.log(user)
-    Article.find({ author: user.username }, function(err, articles) {
+    Article.find({}, function(err, articles) {
       if (err) {
         console.log(err);
       } else {
@@ -22,7 +22,7 @@ router.get("/", ensureAuthenticated, (req, res) => {
     });
   });
 });
-
+//author: user.username per te ber render vetem artikujt e userit te logged
 //Add Route
 router.get("/add", ensureAuthenticated, (req, res) => {
   res.render("add_article", {
@@ -119,7 +119,8 @@ function ensureAuthenticated(req, res, next) {
     return next();
   } else {
     req.flash("danger", "Please login");
-    res.redirect("/");
+    //res.redirect("/");
+    res.render("login");
   }
 }
 

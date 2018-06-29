@@ -66,7 +66,7 @@ router.post("/register", function(req, res) {
                 return;
               } else {
                 req.flash("success", "You are now registered and can log in");
-                res.redirect("/");
+                res.redirect("/users/login");
               }
             });
           });
@@ -76,11 +76,15 @@ router.post("/register", function(req, res) {
   }
 });
 
+router.get("/login", function(req, res) {
+  res.render("login");
+});
+
 //Login process
 router.post("/login", function(req, res, next) {
   passport.authenticate("local", {
     successRedirect: "/articles",
-    failureRedirect: "/",
+    failureRedirect: "/users/login",
     failureFlash: true
   })(req, res, next);
 });
