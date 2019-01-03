@@ -3,10 +3,12 @@ const path = require("path");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
-const flash = require("connect-flash");
 const session = require("express-session");
 const db = require("./config/database");
 const passport = require("passport");
+
+//Bring in Models
+let Article = require("./models/article");
 
 //DB connect
 mongoose.connect(
@@ -26,10 +28,6 @@ dbc.on("error", err => {
 
 //Init app
 const app = express();
-
-//Bring in Models
-let Article = require("./models/article");
-let User = require("./models/user");
 
 //Load view engine
 app.set("views", path.join(__dirname, "views"));
@@ -99,8 +97,7 @@ app.use("/users", users);
 app.get("/", function(req, res) {
   Article.find({}, function(err, articles) {
     if (err) {
-      
-      console.log(err);
+       console.log(err);
     } else {
       res.render("index", {
         title: "Articles",

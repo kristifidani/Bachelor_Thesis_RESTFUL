@@ -77,16 +77,27 @@ router.post("/register", function(req, res) {
 });
 
 router.get("/login", function(req, res) {
-  res.render("login");
-});
+    res.render("login");
+ });
 
 //Login process
 router.post("/login", function(req, res, next) {
-  passport.authenticate("local", {
-    successRedirect: "/articles",
-    failureRedirect: "/users/login",
-    failureFlash: true
-  })(req, res, next);
+
+  req.checkBody("username", "Username is required").notEmpty();
+  req.checkBody("password", "Password is required").notEmpty();
+
+  let errors = req.validationErrors();
+  if (errors) {
+    res.render("login", {
+      errors: errors
+    }) 
+  } else {
+      passport.authenticate("local", {
+        successRedirect: "/",
+        failureRedirect: "/users/login",
+        failureFlash: true
+      })(req, res, next);
+    }
 });
 
 //Logout

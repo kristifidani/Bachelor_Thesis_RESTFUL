@@ -6,30 +6,13 @@ let Article = require("../models/article");
 //User model
 let User = require("../models/user");
 
-//Get articles from db
-router.get("/", ensureAuthenticated, (req, res) => {
-  User.findById(req.user.id, function(err, user) {
-    //console.log(user)
-    Article.find({}, function(err, articles) {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("index", {
-          title: "Articles",
-          articles: articles
-        });
-      }
-    });
-  });
-});
-//author: user.username per te ber render vetem artikujt e userit te logged
+
 //Add Route
 router.get("/add", ensureAuthenticated, (req, res) => {
   res.render("add_article", {
     title: " Add Articles"
   });
 });
-
 
 //Add article
 router.post("/add", ensureAuthenticated, (req, res) => {
@@ -55,7 +38,7 @@ router.post("/add", ensureAuthenticated, (req, res) => {
         console.log(err);
       } else {
         req.flash("success", "Article Added");
-        res.redirect("/articles");
+        res.redirect("/");
       }
     });
   }
@@ -85,7 +68,7 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
       return;
     } else {
       req.flash("success", "Article Updated");
-      res.redirect("/articles");
+      res.redirect("/");
     }
   });
 });
@@ -96,7 +79,7 @@ router.get("/delete/:id", ensureAuthenticated, function(req, res) {
     if (err) {
       console.log(err);
     } else {
-      res.redirect("/articles");
+      res.redirect("/");
     }
   });
 });
