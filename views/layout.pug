@@ -26,7 +26,7 @@ html
                     ul.nav.navbar-nav.navbar-right
                         if user
                             li 
-                                a Welcome #{user.name}
+                                a Welcome #{user.name + ' ' + user.surname}
                             li 
                                 a(href='/users/logout') Logout
                         else
@@ -43,7 +43,7 @@ html
             br
             hr
             footer
-                p Copyright &copy; 2018
+                p Copyright &copy; 2019
         script(src='/bower_components/jquery/dist/jquery.js')
         script(src='/bower_components/bootstrap/dist/js/bootstrap.js')
      

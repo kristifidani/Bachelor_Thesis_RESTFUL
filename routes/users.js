@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+const config = require("../config/database");
 
 //Article Model
 let User = require("../models/user");
@@ -14,22 +17,42 @@ router.get("/register", function(req, res) {
 //Register process
 router.post("/register", function(req, res) {
   const name = req.body.name;
+  const surname = req.body.surname
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
   const password2 = req.body.password2;
 
-  req.checkBody("name", "Name is required to have at least 6 characters including only letters and digits !"
-    ).matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
+  req.checkBody(
+    "name",
+    "Name is required to have at least 6 characters including only letters and digits !"
+  );
+  //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
+
+  req.checkBody(
+    "surname",
+    "Surname is required to have at least 6 characters including only letters and digits !"
+  );
+  //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
+
   req.checkBody("email", "Email is required").notEmpty();
-  req.checkBody("email", "Email is not valid").isEmail();
-  req
-    .checkBody("username", "Username is required to have at least 6 characters including only letters and digits !"
-    ).matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-  req
-    .checkBody("password", "Password is required to have at least 6 characters including upper,lower case, digit and accepts special characters !"
-    ).matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}$");
+  req.checkBody("email", "Email is not valid").isEmail(); 
+
+  req.checkBody(
+    "username",
+    "Username is required to have at least 6 characters including only letters and digits !"
+  );
+  //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
+
+  req.checkBody(
+    "password",
+    "Password is required to have at least 6 characters including at least one uppercase letter and digit !"
+  );
+  //.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}$");
+
   req.checkBody("password2", "Passwords do not match").equals(req.body.password);
+
+  const hashedPassword = bcrypt.hashSync(password, 8); //encrypt pass
 
   let errors = req.validationErrors();
   if (errors) {
@@ -38,51 +61,113 @@ router.post("/register", function(req, res) {
     });
   } else {
     User.findOne({ username: req.body.username }, function(err, user) {
+      //Check if email already exists in db
       if (err) {
         console.log(err);
       } else if (user) {
-        //console.log("user exists");
-        req.flash("danger", "User exists ! Try another username !");
+        req.flash("danger", "User exists !");
         res.redirect("/users/register");
-        //console.log(user)
       } else {
-        let newUser = new User({
-          name: name,
-          email: email,
-          username: username,
-          password: password
-        });
+        User.create(
+          {
+            name,
+            surname,
+            email,
+            username,
+            password: hashedPassword
+          },
+          function(err, user) {
+            if (err)
+              return res
+                .status(500)
+                .send("There was a problem registering the user.");
 
-        //Pjesa e passwordit qe e inkripton
-        bcrypt.genSalt(10, function(err, salt) {
-          bcrypt.hash(newUser.password, salt, function(err, hash) {
-            if (err) {
-              console.log(err);
-            }
-            newUser.password = hash;
-            newUser.save(function(err) {
-              if (err) {
-                console.log(err);
-                return;
-              } else {
-                req.flash("success", "You are now registered and can log in");
-                res.redirect("/users/login");
+            // create a token with reference to the users id
+            const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+              expiresIn: "24h"
+            });
+
+            const output = `<h2>Click on the link below to verify email </h2>
+      <a href="http://localhost:3000/users/afteremail/${token}" >${token}</a>
+      `;
+
+            //Duhet te lejoj te opsionet e acc acces from less secure apps qe ta perdor gmail si host
+            let transporter = nodemailer.createTransport({
+              host: "smtp.gmail.com",
+              port: 587,
+              secure: false, // true for 465, false for other ports
+              auth: {
+                user: "kristifidani0@gmail.com",
+                pass: "akanujatoburime123"
+              },
+              tls: {
+                rejectUnauthorized: false
               }
             });
-          });
-        });
+
+            // setup email data with unicode symbols
+            let mailOptions = {
+              from: '"Nodemail testing" <kristifidani0@gmail.com>',
+              to: email,
+              subject: "Email verification", // Subject line
+              text: "Hello world?", // plain text body
+              html: output // html body
+            };
+
+            // send mail with defined transport object
+            transporter.sendMail(mailOptions, (error, info) => {
+              if (error) {
+                return console.log(error);
+              }
+              console.log("Message sent: %s", info.messageId);
+              console.log(
+                "Preview URL: %s",
+                nodemailer.getTestMessageUrl(info)
+              );
+            
+              req.flash("success", "Verify Email");
+              res.redirect("/users/login");
+              res.send({ token: token });
+            });
+          }
+        );
       }
     });
   }
 });
 
+//Confirm email
+router.get("/afteremail/:token", function(req, res) {
+  //const token = req.headers["x-access-token"];
+  const token = req.params.token;
+  console.log(token)
+  if (!token) return res.send({ message: "No token provided." });
+
+  jwt.verify(token, config.JWT_SECRET, function(err, decoded) {
+    if (err) return res.send({ message: "Failed to authenticate token." });
+
+    //res.send(decoded); gjen userin duke match id e tij me ate te tokenit qe esht te docode
+    User.findByIdAndUpdate(
+      { _id: decoded.id },
+      { active: true },
+      { password: 0 },
+      function(err, user) {
+        if (err) return res.send("There was a problem finding the user.");
+        if (!user) return res.send("No user found.");
+
+        res.send("User is now active");
+      }
+    );
+  });
+});
+
+//Render login page
 router.get("/login", function(req, res) {
-    res.render("login");
- });
+  res.render("login");
+});
 
 //Login process
 router.post("/login", function(req, res, next) {
-
   req.checkBody("username", "Username is required").notEmpty();
   req.checkBody("password", "Password is required").notEmpty();
 
@@ -90,14 +175,14 @@ router.post("/login", function(req, res, next) {
   if (errors) {
     res.render("login", {
       errors: errors
-    }) 
+    });
   } else {
-      passport.authenticate("local", {
-        successRedirect: "/",
-        failureRedirect: "/users/login",
-        failureFlash: true
-      })(req, res, next);
-    }
+    passport.authenticate("local", {
+      successRedirect: "/",
+      failureRedirect: "/users/login",
+      failureFlash: true
+    })(req, res, next);
+  }
 });
 
 //Logout

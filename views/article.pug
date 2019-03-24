@@ -2,9 +2,9 @@ extends layout
 
 
 block content
-    h1= article.title
-    h5= article.author
-    p= article.body
+    h1= 'Title :' + ' ' + article.title
+    h5= 'Author :' + ' ' + article.author
+    p=  'Description :' + ' ' + article.body
     hr
     if user
         if user.username == article.author
