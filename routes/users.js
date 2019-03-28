@@ -17,7 +17,7 @@ router.get("/register", function(req, res) {
 //Register process
 router.post("/register", function(req, res) {
   const name = req.body.name;
-  const surname = req.body.surname
+  const surname = req.body.surname;
   const email = req.body.email;
   const username = req.body.username;
   const password = req.body.password;
@@ -36,7 +36,7 @@ router.post("/register", function(req, res) {
   //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
 
   req.checkBody("email", "Email is required").notEmpty();
-  req.checkBody("email", "Email is not valid").isEmail(); 
+  req.checkBody("email", "Email is not valid").isEmail();
 
   req.checkBody(
     "username",
@@ -50,7 +50,9 @@ router.post("/register", function(req, res) {
   );
   //.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}$");
 
-  req.checkBody("password2", "Passwords do not match").equals(req.body.password);
+  req
+    .checkBody("password2", "Passwords do not match")
+    .equals(req.body.password);
 
   const hashedPassword = bcrypt.hashSync(password, 8); //encrypt pass
 
@@ -124,7 +126,7 @@ router.post("/register", function(req, res) {
                 "Preview URL: %s",
                 nodemailer.getTestMessageUrl(info)
               );
-            
+
               req.flash("success", "Verify Email");
               res.redirect("/users/login");
               res.send({ token: token });
@@ -140,7 +142,7 @@ router.post("/register", function(req, res) {
 router.get("/afteremail/:token", function(req, res) {
   //const token = req.headers["x-access-token"];
   const token = req.params.token;
-  console.log(token)
+  console.log(token);
   if (!token) return res.send({ message: "No token provided." });
 
   jwt.verify(token, config.JWT_SECRET, function(err, decoded) {

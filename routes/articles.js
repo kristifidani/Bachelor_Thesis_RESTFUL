@@ -5,6 +5,25 @@ const router = express.Router();
 let Article = require("../models/article");
 //User model
 let User = require("../models/user");
+//Comment model
+let Comment = require("../models/comment");
+
+//Only user articles
+router.get("/mine", ensureAuthenticated, function(req, res) {
+  User.findOne(req.user, (err, user) => {
+    Article.find({ author: user.username }, function(err, articles) {
+      // /console.log(articles)
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("index", {
+          title: "Articles",
+          articles: articles
+        });
+      }
+    });
+  });
+});
 
 
 //Add Route
@@ -16,7 +35,6 @@ router.get("/add", ensureAuthenticated, (req, res) => {
 
 //Add article
 router.post("/add", ensureAuthenticated, (req, res) => {
-  
   req.checkBody("title", "Title is required").notEmpty();
   req.checkBody("body", "Body is required").notEmpty();
 
@@ -44,6 +62,7 @@ router.post("/add", ensureAuthenticated, (req, res) => {
   }
 });
 
+
 //Load edit form
 router.get("/edit/:id", ensureAuthenticated, function(req, res) {
   Article.findById(req.params.id, function(err, article) {
@@ -62,6 +81,7 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 
   let query = { _id: req.params.id };
 
+
   Article.update(query, article, err => {
     if (err) {
       console.log(err);
@@ -76,23 +96,57 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 //Delete article
 router.get("/delete/:id", ensureAuthenticated, function(req, res) {
   Article.findByIdAndRemove(req.params.id, function(err, article) {
+  Comment.remove({articleID: article._id}, (err, comments) =>{
     if (err) {
       console.log(err);
     } else {
       res.redirect("/");
     }
+  })  
   });
 });
 
 //Get single article
 router.get("/article/:id", ensureAuthenticated, function(req, res) {
   Article.findById(req.params.id, function(err, article) {
-    User.find({ name: article.author }, function(err, user) {
-      //console.log(user)
-      res.render("article", {
-        article: article
-      });
+  Comment.find({articleID: req.params.id}, function(err, comments) { 
+  User.find({ name: article.author }, function(err, user) {      
+        res.render("article", {
+          title: 'Comments',
+          comments: comments,
+          article: article
+        });
+      })     
     });
+  });
+});
+
+//Add comment
+router.post("/article/:id", ensureAuthenticated, (req, res) => {
+  let comment = new Comment();
+  comment.user = req.user.username;
+  comment.comment = req.body.comment;
+  comment.articleID = req.params.id;
+ 
+  comment.save(err => {
+    if (err) {
+      console.log(err);
+      return;
+    } else {
+      req.flash("success", "Article Updated");
+      res.redirect("/articles/article/"+req.params.id);
+    }
+  });
+});
+
+//Delete Comment
+router.get("/comment_del/:id", ensureAuthenticated, function(req, res) {
+  Comment.findByIdAndRemove(req.params.id, function(err, comment) {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect("/");
+    } 
   });
 });
 

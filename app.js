@@ -11,10 +11,7 @@ const passport = require("passport");
 let Article = require("./models/article");
 
 //DB connect
-mongoose.connect(
-  db.database,
-  { useMongoClient: true }
-);
+mongoose.connect(db.database, { useMongoClient: true });
 mongoose.Promise = global.Promise;
 //Check connection
 let dbc = mongoose.connection;
@@ -97,14 +94,14 @@ app.use("/users", users);
 app.get("/", function(req, res) {
   Article.find({}, function(err, articles) {
     if (err) {
-       console.log(err);
+      console.log(err);
     } else {
       res.render("index", {
         title: "Articles",
         articles: articles
       });
     }
-});
+  });
 });
 
 //Start Server
