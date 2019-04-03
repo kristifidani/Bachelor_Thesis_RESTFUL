@@ -10,14 +10,13 @@ let Comment = require("../models/comment");
 
 //Only user articles
 router.get("/mine", ensureAuthenticated, function(req, res) {
-  User.findOne(req.user, (err, user) => {
+  User.findById(req.user._id, (err, user) => {
     Article.find({ author: user.username }, function(err, articles) {
-      // /console.log(articles)
       if (err) {
         console.log(err);
       } else {
         res.render("index", {
-          title: "Articles",
+          title: "Your Articles",
           articles: articles
         });
       }
@@ -25,6 +24,19 @@ router.get("/mine", ensureAuthenticated, function(req, res) {
   });
 });
 
+//User bookmarks articles
+router.get("/bookmarks", ensureAuthenticated, function(req, res) {
+  User.findById(req.user._id, (err, articles) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.render("index", {
+        title: "Your Bookmarks",
+        articles: articles.bookmarks
+      });
+    } 
+  });
+});
 
 //Add Route
 router.get("/add", ensureAuthenticated, (req, res) => {
@@ -62,7 +74,6 @@ router.post("/add", ensureAuthenticated, (req, res) => {
   }
 });
 
-
 //Load edit form
 router.get("/edit/:id", ensureAuthenticated, function(req, res) {
   Article.findById(req.params.id, function(err, article) {
@@ -81,14 +92,13 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 
   let query = { _id: req.params.id };
 
-
   Article.update(query, article, err => {
     if (err) {
       console.log(err);
       return;
     } else {
       req.flash("success", "Article Updated");
-      res.redirect("/");
+      res.redirect("/articles/article/" + req.params.id);
     }
   });
 });
@@ -96,27 +106,27 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 //Delete article
 router.get("/delete/:id", ensureAuthenticated, function(req, res) {
   Article.findByIdAndRemove(req.params.id, function(err, article) {
-  Comment.remove({articleID: article._id}, (err, comments) =>{
-    if (err) {
-      console.log(err);
-    } else {
-      res.redirect("/");
-    }
-  })  
+    Comment.remove({ articleID: article._id }, (err, comments) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.redirect("/");
+      }
+    });
   });
 });
 
 //Get single article
 router.get("/article/:id", ensureAuthenticated, function(req, res) {
   Article.findById(req.params.id, function(err, article) {
-  Comment.find({articleID: req.params.id}, function(err, comments) { 
-  User.find({ name: article.author }, function(err, user) {      
+    Comment.find({ articleID: req.params.id }, function(err, comments) {
+      User.find({ name: article.author }, function(err, user) {
         res.render("article", {
-          title: 'Comments',
+          title: "Comments",
           comments: comments,
           article: article
         });
-      })     
+      });
     });
   });
 });
@@ -127,26 +137,44 @@ router.post("/article/:id", ensureAuthenticated, (req, res) => {
   comment.user = req.user.username;
   comment.comment = req.body.comment;
   comment.articleID = req.params.id;
- 
+
   comment.save(err => {
     if (err) {
       console.log(err);
       return;
     } else {
       req.flash("success", "Article Updated");
-      res.redirect("/articles/article/"+req.params.id);
+      res.redirect("/articles/article/" + req.params.id);
     }
   });
 });
 
+
+//Bookmarks
+router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
+    User.update({username: req.user.username}, { $push: { bookmarks: article }} , err =>{
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        req.flash("success", "Article added to bookmarks");
+        res.redirect("/articles/article/" + req.params.id);
+        //res.redirect("/articles/bookmarks");
+      }
+    })
+  })  
+});
+
+ 
 //Delete Comment
 router.get("/comment_del/:id", ensureAuthenticated, function(req, res) {
   Comment.findByIdAndRemove(req.params.id, function(err, comment) {
     if (err) {
       console.log(err);
     } else {
-      res.redirect("/");
-    } 
+      res.redirect("/articles/article/" + comment.articleID);
+    }
   });
 });
 

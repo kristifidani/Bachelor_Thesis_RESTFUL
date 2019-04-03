@@ -25,7 +25,8 @@ const UserSchema = mongoose.Schema({
   active: {
     type: Boolean,
     default: false
-  }
+  },
+  bookmarks: []
 });
 
 module.exports = mongoose.model("User", UserSchema);
