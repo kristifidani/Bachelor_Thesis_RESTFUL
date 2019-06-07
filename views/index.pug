@@ -3,7 +3,8 @@ extends layout
 
 block content
     h1 #{title}
-    ul.list-group
+    ul.list-group.list-group-flush
     each article, i in articles
         li.list-group-item
             a(href="/articles/article/"+article._id)= article.title
+            p= article.addedDate

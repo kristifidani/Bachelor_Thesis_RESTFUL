@@ -13,7 +13,12 @@ let articleSchema = mongoose.Schema({
   body: {
     type: String,
     required: true
+  },
+  addedDate: { 
+    type: Date, 
+    default: Date.now
   }
+
 });
 
 module.exports = mongoose.model("Article", articleSchema);

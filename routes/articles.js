@@ -34,7 +34,7 @@ router.get("/bookmarks", ensureAuthenticated, function(req, res) {
         title: "Your Bookmarks",
         articles: articles.bookmarks
       });
-    } 
+    }
   });
 });
 
@@ -58,17 +58,26 @@ router.post("/add", ensureAuthenticated, (req, res) => {
       errors: errors
     });
   } else {
-    let article = new Article();
-    article.title = req.body.title;
-    article.author = req.user.username;
-    article.body = req.body.body;
-
-    article.save(err => {
+    Article.findOne({ title: req.body.title }, (err, article) => {
       if (err) {
         console.log(err);
+      } else if (article) {
+        req.flash("danger", "Title already in use");
+        res.redirect("/articles/add");
       } else {
-        req.flash("success", "Article Added");
-        res.redirect("/");
+        let article = new Article();
+        article.title = req.body.title;
+        article.author = req.user.username;
+        article.body = req.body.body;
+
+        article.save(err => {
+          if (err) {
+            console.log(err);
+          } else {
+            req.flash("success", "Article Added");
+            res.redirect("/");
+          }
+        });
       }
     });
   }
@@ -107,11 +116,15 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 router.get("/delete/:id", ensureAuthenticated, function(req, res) {
   Article.findByIdAndRemove(req.params.id, function(err, article) {
     Comment.remove({ articleID: article._id }, (err, comments) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.redirect("/");
-      }
+      User.update({}, { $pull: { bookmarks: article } }, { multi: true }, (err, user) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          req.flash("success", "Article Deleted");
+          res.redirect("/");
+        }
+      })
     });
   });
 });
@@ -149,24 +162,6 @@ router.post("/article/:id", ensureAuthenticated, (req, res) => {
   });
 });
 
-
-//Bookmarks
-router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
-  Article.findById(req.params.id, (err, article) => {
-    User.update({username: req.user.username}, { $push: { bookmarks: article }} , err =>{
-      if (err) {
-        console.log(err);
-        return;
-      } else {
-        req.flash("success", "Article added to bookmarks");
-        res.redirect("/articles/article/" + req.params.id);
-        //res.redirect("/articles/bookmarks");
-      }
-    })
-  })  
-});
-
- 
 //Delete Comment
 router.get("/comment_del/:id", ensureAuthenticated, function(req, res) {
   Comment.findByIdAndRemove(req.params.id, function(err, comment) {
@@ -177,6 +172,57 @@ router.get("/comment_del/:id", ensureAuthenticated, function(req, res) {
     }
   });
 });
+
+//Bookmarks
+router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
+    User.findById(req.user._id, (err, user) => {
+      const kappa = user.bookmarks.find(element => {
+        if (element.title === article.title) {
+          return true;
+        }
+      });
+      if (kappa) {
+        req.flash("danger", "Article already bookmarked");
+        res.redirect("/articles/article/" + req.params.id);
+      } else {
+        User.update(
+          { username: req.user.username },
+          { $push: { bookmarks: article } },
+          err => {
+            if (err) {
+              console.log(err);
+              return;
+            } else {
+              req.flash("success", "Article added to bookmarks");
+              res.redirect("/articles/article/" + req.params.id);
+              //res.redirect("/articles/bookmarks");
+            }
+          }
+        );
+      }
+    });
+  });
+});
+
+//Remove from bookmarks
+router.post("/rm_bookmarks/:id", ensureAuthenticated, (req, res) => { 
+  Article.findById(req.params.id, (err, article) =>{
+    User.findByIdAndUpdate(
+        req.user._id,
+        { $pull: { bookmarks: article } },
+        (err, user) => {
+          if (err) {
+            console.log(err);
+            return;
+          } else {
+            req.flash("success", "Removed from bookmarks");
+            res.redirect("/articles/article/" + req.params.id);
+          }
+        }
+      );
+  })
+})
 
 //Access control
 function ensureAuthenticated(req, res, next) {
