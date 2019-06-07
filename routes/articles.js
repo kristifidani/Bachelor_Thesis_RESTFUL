@@ -93,7 +93,7 @@ router.get("/edit/:id", ensureAuthenticated, function(req, res) {
   });
 });
 
-//Update submit post route
+//Edit article
 router.post("/edit/:id", ensureAuthenticated, (req, res) => {
   let article = {};
   article.title = req.body.title;
@@ -116,15 +116,20 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 router.get("/delete/:id", ensureAuthenticated, function(req, res) {
   Article.findByIdAndRemove(req.params.id, function(err, article) {
     Comment.remove({ articleID: article._id }, (err, comments) => {
-      User.update({}, { $pull: { bookmarks: article } }, { multi: true }, (err, user) => {
-        if (err) {
-          console.log(err);
-          return;
-        } else {
-          req.flash("success", "Article Deleted");
-          res.redirect("/");
+      User.update(
+        {},
+        { $pull: { bookmarks: article } },
+        { multi: true },
+        (err, user) => {
+          if (err) {
+            console.log(err);
+            return;
+          } else {
+            req.flash("success", "Article Deleted");
+            res.redirect("/");
+          }
         }
-      })
+      );
     });
   });
 });
@@ -135,7 +140,6 @@ router.get("/article/:id", ensureAuthenticated, function(req, res) {
     Comment.find({ articleID: req.params.id }, function(err, comments) {
       User.find({ name: article.author }, function(err, user) {
         res.render("article", {
-          title: "Comments",
           comments: comments,
           article: article
         });
@@ -206,23 +210,23 @@ router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
 });
 
 //Remove from bookmarks
-router.post("/rm_bookmarks/:id", ensureAuthenticated, (req, res) => { 
-  Article.findById(req.params.id, (err, article) =>{
+router.post("/rm_bookmarks/:id", ensureAuthenticated, (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
     User.findByIdAndUpdate(
-        req.user._id,
-        { $pull: { bookmarks: article } },
-        (err, user) => {
-          if (err) {
-            console.log(err);
-            return;
-          } else {
-            req.flash("success", "Removed from bookmarks");
-            res.redirect("/articles/article/" + req.params.id);
-          }
+      req.user._id,
+      { $pull: { bookmarks: article } },
+      (err, user) => {
+        if (err) {
+          console.log(err);
+          return;
+        } else {
+          req.flash("success", "Removed from bookmarks");
+          res.redirect("/articles/article/" + req.params.id);
         }
-      );
-  })
-})
+      }
+    );
+  });
+});
 
 //Access control
 function ensureAuthenticated(req, res, next) {

@@ -2,35 +2,38 @@ extends layout
 
 
 block content
-    h3= 'Article name :' + ' ' + article.title
-    h4= 'Written by :' + ' ' + article.author
-    p=  'Description :' + ' ' + article.body
-    p= 'Added date :' + ' ' + article.addedDate
-    form(method='POST', action='/articles/bookmarks/' +article._id)
-        input.btn(type='submit', value='Bookmark')
-    form(method='POST', action='/articles/rm_bookmarks/' +article._id)
-        input.btn(type='submit', value='Remove from BM')
-    if user
-        if user.username == article.author
-            a.btn.btn-primary(href='/articles/edit/'+article._id) Edit
-            a.btn.btn-danger.delete-article(href='/articles/delete/'+article._id) Delete
-    hr
-    h3.text-primary #{title}
-    each comment, i in comments
-        ul.list-group.list-group-flush
-            li.list-group-item
-                h3= comment.user
-                small= comment.createdDate
-                hr
-                p= comment.comment
-                if user.username == article.author || user.username == comment.user
-                    a.btn.btn-danger.delete-comment(href='/articles/comment_del/'+comment._id) Delete
- 
-                
-                
-                
-    hr
-    form(method='POST', action='/articles/article/' +article._id)
-        #form-group
-            textarea.form-control(name='comment', placeholder='Leave a comment here...')
-        input.btn.btn-primary(type='submit', value='Post')
+        h4.font-weight-bold= 'Article details'
+        .card.text-white.bg-dark.mb-3
+            h4.card-header= 'Title :' + ' ' + article.title
+            .card-body
+                h5.card-title= 'Author :' + ' ' + article.author
+                h7.card-subtitle= 'Added date :' + ' ' + article.addedDate
+                p.card-text=  'Description :' + ' ' + article.body       
+                ul.list-inline
+                    li.list-inline-item
+                        form(method='POST', action='/articles/bookmarks/' +article._id)           
+                            input.btn.btn-outline-primary.btn-outline-success(type='submit', value='Bookmark')
+                    li.list-inline-item
+                        form(method='POST', action='/articles/rm_bookmarks/' +article._id)
+                            input.btn.btn-outline-primary.btn-outline-danger(type='submit', value='Remove BM')
+                    if user
+                        if user.username == article.author
+                            li.list-inline-item
+                                a.btn.btn-outline-primary.btn-outline-success(href='/articles/edit/'+article._id) Edit
+                            li.list-inline-item
+                                a.btn.btn-outline-primary.btn-outline-danger(href='/articles/delete/'+article._id) Delete
+        h4.font-weight-bold= 'Comment section'
+        each comment, i in comments
+            .card.bg-light.mb-3
+                h5.card-header.font-weight-bold= comment.user
+                .card-body
+                    small.card-title.text-muted= comment.createdDate
+                    hr
+                    p.text-break.card-text= comment.comment
+                    if user.username == article.author || user.username == comment.user
+                        a.btn.btn-danger.delete-comment(href='/articles/comment_del/'+comment._id) Delete
+        h4.font-weight-bold= 'Post comment'
+        form(method='POST', action='/articles/article/' +article._id)
+            #form-group
+                textarea.text-break.form-control(name='comment', placeholder='Leave a comment here...')    
+                button.mt-1.btn.btn-primary(type='submit') POST

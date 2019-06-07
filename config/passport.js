@@ -13,7 +13,7 @@ module.exports = function(passport) {
         if (!user) {
           return done(null, false, { message: "No user found" });
         }
-        //check if user is active 
+        //check if user is active
         if (user.active == false) {
           return done(null, false, { message: "Confirm email first" });
         } else {
