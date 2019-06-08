@@ -8,36 +8,6 @@ let User = require("../models/user");
 //Comment model
 let Comment = require("../models/comment");
 
-//Only user articles
-router.get("/mine", ensureAuthenticated, function(req, res) {
-  User.findById(req.user._id, (err, user) => {
-    Article.find({ author: user.username }, function(err, articles) {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render("index", {
-          title: "Your Articles",
-          articles: articles
-        });
-      }
-    });
-  });
-});
-
-//User bookmarks articles
-router.get("/bookmarks", ensureAuthenticated, function(req, res) {
-  User.findById(req.user._id, (err, articles) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.render("index", {
-        title: "Your Bookmarks",
-        articles: articles.bookmarks
-      });
-    }
-  });
-});
-
 //Add Route
 router.get("/add", ensureAuthenticated, (req, res) => {
   res.render("add_article", {

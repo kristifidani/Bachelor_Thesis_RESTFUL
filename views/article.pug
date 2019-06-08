@@ -1,12 +1,14 @@
 extends layout
 
 
-block content
-        h4.font-weight-bold= 'Article details'
+block content 
         .card.text-white.bg-dark.mb-3
-            h4.card-header= 'Title :' + ' ' + article.title
+            h4.card-header.text-info= 'Article details'
             .card-body
-                h5.card-title= 'Author :' + ' ' + article.author
+                h4.card-title= 'Title :' + ' ' + article.title
+                h5.card-title 
+                    h5= 'Author :' + ' '
+                        a.text-info(href='/users/author_profile/'+article.author)= article.author
                 h7.card-subtitle= 'Added date :' + ' ' + article.addedDate
                 p.card-text=  'Description :' + ' ' + article.body       
                 ul.list-inline

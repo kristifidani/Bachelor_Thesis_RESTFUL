@@ -1,0 +1,24 @@
+extends layout
+
+
+block content
+    .card.text-white.bg-dark.mb-3
+        h4.card-header.text-info= 'Personal data'
+        .card-body
+            h5.card-title='Name :' + ' ' + user.name
+            h5.card-title= 'Surname :' + ' ' + user.surname
+            h5.card-title= 'Username :' + ' ' + user.username 
+            hr
+            .row 
+                .col-6
+                    h4.font-weight-bold= 'Bookmarks'    
+                    each article, i in articles
+                        ul.list-group.list-group-flush
+                            li.list-group-item.bg-dark
+                                a.btn.btn-outline-primary.btn-outline-info(href="/articles/article/"+article._id)= article.title
+                .col-6
+                    h4.font-weight-bold= 'My articles'
+                    each user_article, i in user_articles
+                        ul.list-group.list-group-flush
+                            li.list-group-item.bg-dark 
+                                a.btn.btn-outline-primary.btn-outline-info(href="/articles/article/"+user_article._id)= user_article.title   

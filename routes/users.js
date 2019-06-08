@@ -7,7 +7,43 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/database");
 
 //Article Model
+let Article = require("../models/article");
+//User model
 let User = require("../models/user");
+
+//Logged user profile
+router.get("/profile/:id", ensureAuthenticated, function(req, res) {
+  User.findById(req.user._id, function(err, user) {
+    Article.find({author: user.username}, (err, articles) =>{
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("user_profile", {
+          user: user,
+          articles: user.bookmarks,
+          user_articles: articles
+        });
+      }
+    })    
+  });
+});
+
+//Author of book profile
+router.get("/author_profile/:author", ensureAuthenticated, function(req, res) {
+      User.findOne({username: req.params.author}, function(err, user) {
+        Article.find({author: user.username}, (err, articles) =>{
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("user_profile", {
+          user: user,
+          articles: user.bookmarks,
+          user_articles: articles
+        });
+      }
+    })    
+  });
+});
 
 //Register form
 router.get("/register", function(req, res) {
@@ -193,5 +229,16 @@ router.get("/logout", function(req, res) {
   req.flash("success", "You are logged out");
   res.redirect("/");
 });
+
+//Access control
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  } else {
+    req.flash("danger", "Please login");
+    //res.redirect("/");
+    res.render("login");
+  }
+}
 
 module.exports = router;
