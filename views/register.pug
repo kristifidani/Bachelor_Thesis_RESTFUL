@@ -6,21 +6,26 @@ block content
     form(method='POST', action='/users/register')
         #form-group
             label Name:
-            input.form-control(name='name',type='text')
+            small.form-text.text-info Name must have at least 6 characters including only letters and digits
+            input.form-control(name='name',type='text')          
         #form-group
             label Surname:
+            small.form-text.text-info Surname must have at least 6 characters including only letters and digits
             input.form-control(name='surname',type='text')
         #form-group
             label Email:
+            small.form-text.text-info Only valid gmail accounts
             input.form-control(name='email',type='text')
         #form-group
             label Username:
+            small.form-text.text-info Username must have at least 6 characters including only letters and digits
             input.form-control(name='username',type='text')
         #form-group
             label Password:
+            small.form-text.text-info Password must have at least 6 characters including uppercase, letter and digit
             input.form-control(name='password', type='password')
         #form-group
-            label Confirm:
+            label Confirm Password:
             input.form-control(name='password2', type='password')
         br
         input.btn.btn-primary(type='submit', value='Submit')

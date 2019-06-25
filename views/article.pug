@@ -9,7 +9,8 @@ block content
                 h5.card-title 
                     h5= 'Author :' + ' '
                         a.text-info(href='/users/author_profile/'+article.author)= article.author
-                h7.card-subtitle= 'Added date :' + ' ' + article.addedDate
+                h8.card-title Added Date in M/D/YY format :
+                p= article.addedDate.getMonth() + 1 + '/' + article.addedDate.getDate() + '/' + article.addedDate.getFullYear() + ' ' + 'Time: ' + article.addedDate.getHours() + ':' + article.addedDate.getMinutes()
                 p.card-text=  'Description :' + ' ' + article.body       
                 ul.list-inline
                     li.list-inline-item
@@ -29,7 +30,9 @@ block content
             .card.bg-light.mb-3
                 h5.card-header.font-weight-bold= comment.user
                 .card-body
-                    small.card-title.text-muted= comment.createdDate
+                    small.text-muted Posted Date in M/D/YY format :
+                    br
+                    small.card-title.text-muted= comment.createdDate.getMonth() + 1 + '/' + comment.createdDate.getDate() + '/' + comment.createdDate.getFullYear() + ' ' + 'Time: ' + comment.createdDate.getHours() + ':' +comment.createdDate.getMinutes()
                     hr
                     p.text-break.card-text= comment.comment
                     if user.username == article.author || user.username == comment.user

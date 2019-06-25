@@ -16,7 +16,7 @@ let articleSchema = mongoose.Schema({
   },
   addedDate: { 
     type: Date, 
-    default: Date.now
+    default: new Date()
   }
 });
 

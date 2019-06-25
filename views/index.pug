@@ -7,4 +7,5 @@ block content
     each article, i in articles
         li.list-group-item
             a(href="/articles/article/"+article._id)= article.title
-            p= article.addedDate
+            small.form-text.text-muted Added Date in M/D/YY format
+            p= article.addedDate.getMonth() + 1 + '/' + article.addedDate.getDate() + '/' + article.addedDate.getFullYear()

@@ -12,7 +12,7 @@ let commentSchema = mongoose.Schema({
   },
   createdDate: { 
       type: Date, 
-      default: Date.now
+      default: new Date()
   },
   comment: {
     type: String,

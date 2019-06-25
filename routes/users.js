@@ -59,44 +59,27 @@ router.post("/register", function(req, res) {
   const password = req.body.password;
   const password2 = req.body.password2;
 
-  req.checkBody(
-    "name",
-    "Name is required to have at least 6 characters including only letters and digits !"
-  );
+  req.checkBody("name");
   //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-
-  req.checkBody(
-    "surname",
-    "Surname is required to have at least 6 characters including only letters and digits !"
-  );
+  req.checkBody("surname");
   //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-
-  req.checkBody("email", "Email is required").notEmpty();
-  req.checkBody("email", "Email is not valid").isEmail();
-
-  req.checkBody(
-    "username",
-    "Username is required to have at least 6 characters including only letters and digits !"
-  );
+  req.checkBody("email").notEmpty();
+  req.checkBody("email").isEmail();
+  req.checkBody("username");
   //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-
-  req.checkBody(
-    "password",
-    "Password is required to have at least 6 characters including at least one uppercase letter and digit !"
-  );
+  req.checkBody("password");
   //.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}$");
-
-  req
-    .checkBody("password2", "Passwords do not match")
-    .equals(req.body.password);
+  req.checkBody("password2").equals(req.body.password);
 
   const hashedPassword = bcrypt.hashSync(password, 8); //encrypt pass
 
   let errors = req.validationErrors();
   if (errors) {
-    res.render("register", {
+    req.flash("danger", "Fields requirements not fullfilled. Please check them again");
+    res.redirect("/users/register")
+    /* res.render("register", {
       errors: errors
-    });
+    }); */
   } else {
     User.findOne({ username: req.body.username }, function(err, user) {
       //Check if email already exists in db
@@ -178,7 +161,7 @@ router.post("/register", function(req, res) {
 router.get("/afteremail/:token", function(req, res) {
   //const token = req.headers["x-access-token"];
   const token = req.params.token;
-  console.log(token);
+  //console.log(token);
   if (!token) return res.send({ message: "No token provided." });
 
   jwt.verify(token, config.JWT_SECRET, function(err, decoded) {
@@ -216,9 +199,8 @@ router.post("/login", function(req, res, next) {
     });
   } else {
     passport.authenticate("local", {
-      successRedirect: "/",
       failureRedirect: "/users/login",
-      failureFlash: true
+      successRedirect: "/",     
     })(req, res, next);
   }
 });

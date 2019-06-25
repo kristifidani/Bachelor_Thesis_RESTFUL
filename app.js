@@ -92,7 +92,7 @@ app.use("/users", users);
 
 //Home route
 app.get("/", function(req, res) {
-  Article.find({}, function(err, articles) {
+  Article.find({}, function(err, articles) { 
     articles.sort(function(a, b) {
       const textA = a.title.toUpperCase();
       var textB = b.title.toUpperCase();

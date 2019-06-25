@@ -3,9 +3,10 @@ extends layout
 
 block content
     h1 Login
+    small.form-text.text-info Please verify email account or enter correct data to login
     form(method='POST', action='/users/login')
         #form-group
-            label Username:
+            label Username: 
             input.form-control(name='username', type='text')
         #form-group
             label Password:
