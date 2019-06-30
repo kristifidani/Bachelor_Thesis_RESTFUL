@@ -10,7 +10,7 @@ block content
                     h5= 'Author :' + ' '
                         a.text-info(href='/users/author_profile/'+article.author)= article.author
                 h8.card-title Added Date in M/D/YY format :
-                p= article.addedDate.getMonth() + 1 + '/' + article.addedDate.getDate() + '/' + article.addedDate.getFullYear() + ' ' + 'Time: ' + article.addedDate.getHours() + ':' + article.addedDate.getMinutes()
+                p= article.addedDate.getMonth() + 1 + '/' + article.addedDate.getDate() + '/' + article.addedDate.getFullYear()
                 p.card-text=  'Description :' + ' ' + article.body       
                 ul.list-inline
                     li.list-inline-item
