@@ -1,7 +1,7 @@
 {
   "name": "book-collection",
   "version": "1.0.0",
-  "description": "School web project!",
+  "description": "Thesis project",
   "main": "app.js",
   "scripts": {
     "start": "nodemon app"

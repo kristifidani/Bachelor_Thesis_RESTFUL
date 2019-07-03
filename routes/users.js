@@ -59,27 +59,26 @@ router.post("/register", function(req, res) {
   const password = req.body.password;
   const password2 = req.body.password2;
 
-  req.checkBody("name");
+  req.checkBody("name", "Name is required").notEmpty();
+  req.checkBody("surname", "Surname is required").notEmpty();
+  req.checkBody("email", "Email is required").notEmpty();
+  req.checkBody("email", "Not valid email").isEmail();
+  req.checkBody("username", "Username is required").notEmpty();
   //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-  req.checkBody("surname");
-  //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-  req.checkBody("email").notEmpty();
-  req.checkBody("email").isEmail();
-  req.checkBody("username");
-  //.matches("^[a-zA-Z][a-zA-Z0-9]{5,}$");
-  req.checkBody("password");
+  req.checkBody("password", "Password is required").notEmpty();
   //.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{6,}$");
-  req.checkBody("password2").equals(req.body.password);
+  req.checkBody("password2", "Confirm password is required").notEmpty();
+  req.checkBody("password2", "Passwords do not match").equals(req.body.password);
 
   const hashedPassword = bcrypt.hashSync(password, 8); //encrypt pass
 
   let errors = req.validationErrors();
   if (errors) {
-    req.flash("danger", "Fields requirements not fullfilled. Please check them again");
-    res.redirect("/users/register")
-    /* res.render("register", {
+    //req.flash("danger", "Fields requirements not fullfilled. Please check them again");
+    //res.redirect("/users/register")
+     res.render("register", {
       errors: errors
-    }); */
+    }); 
   } else {
     User.findOne({ username: req.body.username }, function(err, user) {
       //Check if email already exists in db
