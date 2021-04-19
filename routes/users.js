@@ -118,7 +118,7 @@ router.post("/register", function(req, res) {
               secure: false, // true for 465, false for other ports
               auth: {
                 user: "kristifidani0@gmail.com",
-                pass: "akanujatoburime123"
+                pass: "Akanujatoburime123."
               },
               tls: {
                 rejectUnauthorized: false

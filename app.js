@@ -104,9 +104,10 @@ app.get("/", function(req, res) {
       res.render("index", {
         title: "Articles",
         articles: articles
-      });
+      }); 
     }
-  });
+  }); 
+  //res.send('Hello World!')
 });
 
 //Start Server
