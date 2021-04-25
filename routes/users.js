@@ -1,10 +1,11 @@
+//environmental variables
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const passport = require("passport");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
-const config = require("../config/database");
 
 //Article Model
 let Article = require("../models/article");
@@ -103,7 +104,7 @@ router.post("/register", function(req, res) {
                 .send("There was a problem registering the user.");
 
             // create a token with reference to the users id
-            const token = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+            const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
               expiresIn: "24h"
             });
 
@@ -163,7 +164,7 @@ router.get("/afteremail/:token", function(req, res) {
   //console.log(token);
   if (!token) return res.send({ message: "No token provided." });
 
-  jwt.verify(token, config.JWT_SECRET, function(err, decoded) {
+  jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
     if (err) return res.send({ message: "Failed to authenticate token." });
 
     //res.send(decoded); gjen userin duke match id e tij me ate te tokenit qe esht te docode

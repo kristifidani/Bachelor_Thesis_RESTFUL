@@ -71,7 +71,7 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 
   let query = { _id: req.params.id };
 
-  Article.update(query, article, err => {
+  Article.updateOne(query, article, err => {
     if (err) {
       console.log(err);
       return;
@@ -85,8 +85,8 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 //Delete article
 router.get("/delete/:id", ensureAuthenticated, function(req, res) {
   Article.findByIdAndRemove(req.params.id, function(err, article) {
-    Comment.remove({ articleID: article._id }, (err, comments) => {
-      User.update(
+    Comment.deleteMany({ articleID: article._id }, (err, comments) => {
+      User.updateOne(
         {},
         { $pull: { bookmarks: article } },
         { multi: true },
@@ -160,7 +160,7 @@ router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
         req.flash("danger", "Article already bookmarked");
         res.redirect("/articles/article/" + req.params.id);
       } else {
-        User.update(
+        User.updateOne(
           { username: req.user.username },
           { $push: { bookmarks: article } },
           err => {

@@ -1,26 +1,28 @@
+//environmental variables
+require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const expressValidator = require("express-validator");
 const session = require("express-session");
-const db = require("./config/database");
 const passport = require("passport");
 
 //Bring in Models
 let Article = require("./models/article");
 
 //DB connect
-mongoose.connect(db.database, { useMongoClient: true });
-mongoose.Promise = global.Promise;
-//Check connection
-let dbc = mongoose.connection;
-dbc.once("open", () => {
-  console.log("Connected to MongoDB");
+mongoose.connect(process.env.DB_HOST, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
 });
-//Check for DB errors
-dbc.on("error", err => {
-  console.log(err);
+//check if we have a successfull connections
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "Failed to connect"));
+db.once("open", function () {
+  console.log("DB connected");
 });
 
 //Init app
@@ -40,7 +42,7 @@ app.use(express.static(path.join(__dirname, "public")));
 //Express Session middleware
 app.use(
   session({
-    secret: "keyboard cat",
+    secret: process.env.SECRET_2,
     resave: true,
     saveUninitialized: true
   })
@@ -111,6 +113,6 @@ app.get("/", function(req, res) {
 });
 
 //Start Server
-app.listen(3000, () => {
-  console.log("You are at port 3000");
+app.listen(process.env.PORT, () => {
+  console.log(`Server started on port: ${process.env.PORT}`);
 });
