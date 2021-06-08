@@ -112,9 +112,8 @@ app.get("/", function(req, res) {
   //res.send('Hello World!')
 });
 
-//For Heroku deployment
-let port = process.env.PORT || 3000;
+
 //Start Server
-app.listen(port, () => {
-  console.log(`Server started on port: ${port}`);
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server started successfully!`);
 });
