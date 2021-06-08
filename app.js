@@ -100,7 +100,7 @@ app.get("/", function(req, res) {
       var textB = b.title.toUpperCase();
       return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
   });
-    if (err) {
+    if (err) { 
       console.log(err);
     } else {
       res.render("index", {
