@@ -4,7 +4,7 @@
   "description": "Thesis project",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "node app.js"
   },
   "author": "Kristi Fidani",
   "license": "ISC",
