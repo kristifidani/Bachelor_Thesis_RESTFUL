@@ -4,13 +4,10 @@
   "description": "Thesis project",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js"
+    "start": "nodemon app.js"
   },
   "author": "Kristi Fidani",
   "license": "ISC",
-  "engines": {
-    "node": "14.16.1"
-  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
