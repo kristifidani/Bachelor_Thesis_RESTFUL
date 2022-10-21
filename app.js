@@ -44,13 +44,13 @@ app.use(
   session({
     secret: process.env.SECRET_2,
     resave: true,
-    saveUninitialized: true
+    saveUninitialized: true,
   })
 );
 
 //Express Messages middleware
 app.use(require("connect-flash")());
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.locals.messages = require("express-messages")(req, res);
   next();
 });
@@ -58,7 +58,7 @@ app.use(function(req, res, next) {
 //Express validator middleware
 app.use(
   expressValidator({
-    errorFormatter: function(param, msg, value) {
+    errorFormatter: function (param, msg, value) {
       var namespace = param.split("."),
         root = namespace.shift(),
         formParam = root;
@@ -69,9 +69,9 @@ app.use(
       return {
         param: formParam,
         msg: msg,
-        value: value
+        value: value,
       };
-    }
+    },
   })
 );
 
@@ -81,7 +81,7 @@ require("./config/passport")(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get("*", function(req, res, next) {
+app.get("*", function (req, res, next) {
   res.locals.user = req.user || null;
   next();
 });
@@ -93,25 +93,24 @@ app.use("/articles", articles);
 app.use("/users", users);
 
 //Home route
-app.get("/", function(req, res) {
-  Article.find({}, function(err, articles) { 
-    articles.sort(function(a, b) {
+app.get("/", function (req, res) {
+  Article.find({}, function (err, articles) {
+    articles.sort(function (a, b) {
       const textA = a.title.toUpperCase();
       var textB = b.title.toUpperCase();
-      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
-  });
-    if (err) { 
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+    if (err) {
       console.log(err);
     } else {
       res.render("index", {
         title: "Articles",
-        articles: articles
-      }); 
+        articles: articles,
+      });
     }
-  }); 
+  });
   //res.send('Hello World!')
 });
-
 
 //Start Server
 app.listen(process.env.PORT || 3000, () => {

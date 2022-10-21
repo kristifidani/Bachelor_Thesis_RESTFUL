@@ -2,22 +2,22 @@ let mongoose = require("mongoose");
 
 //Article schema
 let commentSchema = mongoose.Schema({
-  articleID:{
+  articleID: {
     type: String,
-    required: true
+    required: true,
   },
   user: {
     type: String,
-    required: true
+    required: true,
   },
-  createdDate: { 
-      type: Date, 
-      default: new Date()
+  createdDate: {
+    type: Date,
+    default: new Date(),
   },
   comment: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Comment", commentSchema);
