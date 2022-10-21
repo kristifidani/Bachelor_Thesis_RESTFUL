@@ -11,7 +11,7 @@ let Comment = require("../models/comment");
 //Add Route
 router.get("/add", ensureAuthenticated, (req, res) => {
   res.render("add_article", {
-    title: " Add Articles"
+    title: " Add Articles",
   });
 });
 
@@ -25,7 +25,7 @@ router.post("/add", ensureAuthenticated, (req, res) => {
   if (errors) {
     res.render("add_article", {
       title: "Add Article",
-      errors: errors
+      errors: errors,
     });
   } else {
     Article.findOne({ title: req.body.title }, (err, article) => {
@@ -40,7 +40,7 @@ router.post("/add", ensureAuthenticated, (req, res) => {
         article.author = req.user.username;
         article.body = req.body.body;
 
-        article.save(err => {
+        article.save((err) => {
           if (err) {
             console.log(err);
           } else {
@@ -54,11 +54,11 @@ router.post("/add", ensureAuthenticated, (req, res) => {
 });
 
 //Load edit form
-router.get("/edit/:id", ensureAuthenticated, function(req, res) {
-  Article.findById(req.params.id, function(err, article) {
+router.get("/edit/:id", ensureAuthenticated, function (req, res) {
+  Article.findById(req.params.id, function (err, article) {
     res.render("edit_article", {
       article: article,
-      title: "Edit Article"
+      title: "Edit Article",
     });
   });
 });
@@ -71,7 +71,7 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 
   let query = { _id: req.params.id };
 
-  Article.updateOne(query, article, err => {
+  Article.updateOne(query, article, (err) => {
     if (err) {
       console.log(err);
       return;
@@ -83,8 +83,8 @@ router.post("/edit/:id", ensureAuthenticated, (req, res) => {
 });
 
 //Delete article
-router.get("/delete/:id", ensureAuthenticated, function(req, res) {
-  Article.findByIdAndRemove(req.params.id, function(err, article) {
+router.get("/delete/:id", ensureAuthenticated, function (req, res) {
+  Article.findByIdAndRemove(req.params.id, function (err, article) {
     Comment.deleteMany({ articleID: article._id }, (err, comments) => {
       User.updateOne(
         {},
@@ -105,13 +105,13 @@ router.get("/delete/:id", ensureAuthenticated, function(req, res) {
 });
 
 //Get single article
-router.get("/article/:id", ensureAuthenticated, function(req, res) {
-  Article.findById(req.params.id, function(err, article) {
-    Comment.find({ articleID: req.params.id }, function(err, comments) {
-      User.find({ name: article.author }, function(err, user) {
+router.get("/article/:id", ensureAuthenticated, function (req, res) {
+  Article.findById(req.params.id, function (err, article) {
+    Comment.find({ articleID: req.params.id }, function (err, comments) {
+      User.find({ name: article.author }, function (err, user) {
         res.render("article", {
           comments: comments,
-          article: article
+          article: article,
         });
       });
     });
@@ -125,7 +125,7 @@ router.post("/article/:id", ensureAuthenticated, (req, res) => {
   comment.comment = req.body.comment;
   comment.articleID = req.params.id;
 
-  comment.save(err => {
+  comment.save((err) => {
     if (err) {
       console.log(err);
       return;
@@ -137,8 +137,8 @@ router.post("/article/:id", ensureAuthenticated, (req, res) => {
 });
 
 //Delete Comment
-router.get("/comment_del/:id", ensureAuthenticated, function(req, res) {
-  Comment.findByIdAndRemove(req.params.id, function(err, comment) {
+router.get("/comment_del/:id", ensureAuthenticated, function (req, res) {
+  Comment.findByIdAndRemove(req.params.id, function (err, comment) {
     if (err) {
       console.log(err);
     } else {
@@ -151,7 +151,7 @@ router.get("/comment_del/:id", ensureAuthenticated, function(req, res) {
 router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
   Article.findById(req.params.id, (err, article) => {
     User.findById(req.user._id, (err, user) => {
-      const kappa = user.bookmarks.find(element => {
+      const kappa = user.bookmarks.find((element) => {
         if (element.title === article.title) {
           return true;
         }
@@ -163,7 +163,7 @@ router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
         User.updateOne(
           { username: req.user.username },
           { $push: { bookmarks: article } },
-          err => {
+          (err) => {
             if (err) {
               console.log(err);
               return;
