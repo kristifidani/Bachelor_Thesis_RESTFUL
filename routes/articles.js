@@ -170,7 +170,6 @@ router.post("/bookmarks/:id", ensureAuthenticated, (req, res) => {
             } else {
               req.flash("success", "Article added to bookmarks");
               res.redirect("/articles/article/" + req.params.id);
-              //res.redirect("/articles/bookmarks");
             }
           }
         );
@@ -204,7 +203,6 @@ function ensureAuthenticated(req, res, next) {
     return next();
   } else {
     req.flash("danger", "Please login");
-    //res.redirect("/");
     res.render("login");
   }
 }

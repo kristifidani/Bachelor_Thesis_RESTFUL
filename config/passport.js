@@ -11,12 +11,10 @@ module.exports = function (passport) {
       User.findOne(query, function (err, user) {
         if (err) throw err;
         if (!user) {
-          //return done(null, false, { message: "No user found" });
           return done(null, false);
         }
         //check if user is active
         if (user.active == false) {
-          //return done(null, false, { message: "Confirm email first" });
           return done(null, false);
         } else {
           //Match password
@@ -25,12 +23,10 @@ module.exports = function (passport) {
             if (isMatch) {
               return done(null, user);
             } else {
-              //return done(null, false, { message: "Wrong password" });
               return done(null, false);
             }
           });
         }
-        //console.log(user);
       });
     })
   );

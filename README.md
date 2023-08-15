@@ -1,55 +1,81 @@
-**Environment Setup**
+# Bachelor's Thesis Project: Community-Driven Article Sharing Web Application
 
-I have installed Node.js in my laptop before starting.
-Then I created a JSON file with npm init command and complete all the automated questions.
-I installed my packages dependencies with npm install.
+# Overview
 
-Package Dependencies:
+Welcome to the repository for my Bachelor's thesis project! This web application, built using **Node.js** with the **Express.js** framework, **MongoDB**, and **Pug** templates, showcases my skills in full-stack development. The application allows users to engage with articles, create content, and interact within a community-driven environment. Let's delve into the key technologies that power this project:
 
-- Express – Node.js framework
-- Bryptjs - used for security reasons like encryption of password
-- Mongoose – Mongo DB package
-- Body-parser - used for parsing data coming from forms
-- Dotenv - global variables
-- Connect-flash – used for displaying error or success messages
-- Express-messages – get error or success messages and display them with connect-flash
-- Express-session – used to create a session for the user the logs in
-- Jsonwebtoken – used to generate a token when user register and confirms his/her account
-- Nodemailer – used to send confirmation email
-- Pug – server render engine
-- Express-validator – used to validate information coming from forms
-- Passport, passport-local – used for login authentication
+### Node.js and Express.js
 
-Now that I set up my environment and installed everything I needed, started the actual work.
+- **Node.js**: This runtime environment enables server-side JavaScript execution, making it an ideal choice for building scalable and efficient web applications. It allows us to use JavaScript both on the client and server sides, leading to a more cohesive development experience.
 
-**Folder/file main architecture and creating DB Model Schemas**
+- **Express.js**: A powerful and minimalistic web application framework built on top of Node.js, Express.js simplifies the creation of web applications and APIs. It provides features for routing, middleware integration, and handling HTTP requests, making it an excellent choice for building the server-side of our application.
 
-- To begin with I created app.js file which is the main file where I initialized the local server, imported my middleware packages and initialized the connection with mongo DB.
-- In my DB I created three collections for the user, article and comment. For these collections, I built three model schemas in my “models” folder and use them in my requests.
-- User’s username is the same as Article’s author and Article’s id is the same as articleID property in Comment model since mongo DB automatically generates ID when adding an object to the collection.
-- At my “routes” folder I created two files articles.js and users.js to create my application routes.
-- Finally at the “views” folder I have creates all my interface files.
-- After finishing my folder/file main architecture and creating DB model schemas I am ready to work with application functionalities. First of all I started by importing packages that I needed then proceed with user registration and authentication.
+### MongoDB
 
-**Registration and Authentication**
+- **MongoDB**: As a NoSQL database, MongoDB offers flexibility and scalability in storing and managing data. Its document-oriented nature allows us to store complex data structures without rigid schema requirements. This is particularly beneficial for applications where data models might evolve over time, such as a dynamic article-sharing platform.
 
-1. Register process: In order to register the user in have to make two requests.
+### Pug Templates
 
-- First one is a GET request where I render the register interface which consists of a register form with inputs according to user model schema.
-- Second one is a POST request to get data from the form and attempt to register a user. At the post request I validated the inputs including regex and if nothing is wrong check if another user with the same username exists since the username is unique for all users.
-- ~~After both conditions are met I finally registered the user but with a status “false” in the mongo DB meaning that he/she has to confirm email account before being able to login. Confirmation is send through nodemailer package and with it is also attached a token that expires after 24 hours. I put the ID of token same as ID of registered user so I can track user’s status and make it “active” after confirmation. Also during the process the password is encrypted.~~
+- **Pug (formerly Jade)**: A template engine that simplifies the process of creating HTML content by offering a more concise and intuitive syntax. Pug templates help separate the presentation layer from the application's logic, enhancing maintainability and readability of the codebase.
 
-2. Login process: User needs to insert the username and password in order to login. Again this process has two requests.
+### Passport.js
 
-- First one also is a GET requests to render the login form with username and password inputs.
-- Second one is a POST request to get values of inputs and send them to passport.js file at “config” folder. Passport allows me to create a local strategy on how I want to verify the user trying to login. In this strategy I search in the mongo DB for any user with the same username and password as the ones typed in.
+- **Passport.js**: A popular authentication middleware for Node.js, Passport.js simplifies the implementation of user authentication strategies. It provides a seamless way to integrate various authentication methods, such as local authentication (username and password) and third-party login providers (OAuth).
 
-If such user exists I check its status and only if it is true the login is success. When the user logs in successfully in created a user session which contains the logged user data. Passport gives me access to such data, furthermore I create a profile page including general data, its articles and bookmarks.
+These technologies collectively empower the creation of a robust and interactive web application that encompasses user registration, authentication, article management, commenting, and more. The use of Node.js, Express.js, MongoDB, and Pug templates ensures a scalable and efficient architecture that can evolve alongside the needs of the project and its user base.
 
-**Other Features**
+## Project Structure
 
-- In the first page which is the main page are listed all articles in the website sorted by the alphabet. It is displayed only the title of article and added date. For more detailed information on article u can click on them and have available features.
-- Logged user can create, update, delete, add to bookmarks, remove from bookmarks and delete whole comments from its articles. Also logged user can click on the article’s author to go at his/her profile which has the same format for everyone.
-- If it is another user’s article then logged user can only add to bookmarks, remove from bookmarks and delete only his comments on that article.
-- At article details I have to search also for the user which is related to articles author. By finding this user I allowed logged user to view its profile for more articles he/she might like.
-- At both files I created a function for access control which I put as a parameter to all my routes in order to protect them. For example if I copy the url from my profile and log out then I try to access that url again it will redirect me to login page.
+- **app.js**: The central file that initializes the local server, middleware packages, and connects to the MongoDB cluster.
+- **models**: Contains the model schemas for the database, including users, articles, and comments.
+- **routes**: Defines route functionalities for user interactions and core functionalities.
+- **views**: Pug templates that render the visual interface of the application.
+- **config**: Configuration settings, including Passport.js setup for enhanced security.
+
+# Project Functionalities
+
+### User Registration and Authentication
+
+1. **Registration Process**
+   - **GET Request**: Users are welcomed with a registration form rendered by a GET request. The form aligns with the user model schema, featuring inputs that capture key information such as name, surname, email, and username.
+   - **POST Request**: During the POST request, inputs are meticulously validated using regular expressions and other techniques. This ensures data integrity and security. The system also prevents duplicate usernames and dispatches confirmatory emails with activation tokens, enhancing the verification process.
+
+2. **Login Process**
+   - **GET Request**: The GET request renders a user-friendly login form that users can interact with.
+   - **POST Request**: Leveraging Passport.js, the POST request orchestrates the user authentication process. Only users with active accounts and valid credentials can successfully log in, adding an essential layer of security to the application.
+
+### Article Interaction
+
+- **Main Page**: The main page elegantly presents articles in alphabetical order, making use of MongoDB's querying capabilities. Article titles and dates serve as inviting teasers that encourage users to explore further.
+
+- **Article Creation**: Authenticated users wield the power to create compelling articles. The process involves providing a title and content, allowing users to showcase their thoughts and share valuable insights with the community.
+
+- **Article Editing/Deleting**: Authors retain control with the ability to update or delete their article content. This feature ensures that authors can keep their pieces up-to-date and relevant.
+
+- **Commenting**: Articles come alive through the comments section, where users can share their thoughts, engage with others, and foster meaningful discussions. This interactive element enhances user engagement and the sense of community within the platform.
+
+- **Bookmarking**: Users can bookmark articles for later reference. This feature allows users to curate their favorite content, making it easily accessible for future use.
+
+- **User Profiles**: User profiles showcase personalized data, offering a comprehensive view of a user's contributions to the platform. The profile includes authored articles, comments, and bookmarks. This feature not only promotes user engagement but also establishes a sense of identity within the community.
+
+### Access Control
+
+- **User Authentication**: Routes are carefully protected to ensure that only authenticated users gain access to specific functionalities. This approach safeguards user data and promotes a secure user experience.
+
+- **User Authorization**: Article editing and deletion privileges are reserved for the respective authors. This ensures that only those who have created the content can modify or remove it, adding an additional layer of data integrity and control.
+
+These functionalities collectively create an immersive and dynamic user experience. Users can contribute content, engage in discussions, and interact with the community while benefiting from authentication and access controls. The combination of these features results in a comprehensive platform that fosters collaboration and knowledge sharing.
+
+## Getting Started
+
+1. **Node.js Installation**: Ensure Node.js is installed from [Node.js](https://nodejs.org/en/download).
+
+2. **Clone the Repository**: Use `git clone https://github.com/kristifidani/Bachelor_Thesis_RESTFUL.git` to clone the repository.
+
+3. **Install Dependencies**: Run `npm install` to install project dependencies.
+
+4. **Set up MongoDB**: Make sure you have a running MongoDB instance or use MongoDB Atlas.
+
+5. **Configure Environment Variables**: Create a `.env` file based on `DB_HOST=<URL> JWT_SECRET=<JWT> SECRET_2=<SESSION>`.
+
+6. **Run the Application**: Execute `npm start` to start the application.

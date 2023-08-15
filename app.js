@@ -1,5 +1,7 @@
-//environmental variables
+// Load environmental variables
 require("dotenv").config();
+
+// Import required packages
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
@@ -8,38 +10,41 @@ const expressValidator = require("express-validator");
 const session = require("express-session");
 const passport = require("passport");
 
-//Bring in Models
-let Article = require("./models/article");
+// Import Article model
+const Article = require("./models/article");
 
-//DB connect
+// Import articles and users routes
+const articlesRoutes = require("./routes/articles");
+const usersRoutes = require("./routes/users");
+
+// Connect to the database
 mongoose.connect(process.env.DB_HOST, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false,
   useCreateIndex: true,
 });
-//check if we have a successfull connections
 const db = mongoose.connection;
 db.on("error", console.error.bind(console, "Failed to connect"));
 db.once("open", function () {
   console.log("DB connected");
 });
 
-//Init app
+// Initialize the express app
 const app = express();
 
-//Load view engine
+// Set up view engine
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
-//Body-parser middleware
+// Use bodyParser middleware for parsing requests
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//Set public folder
+// Serve static files from the public folder
 app.use(express.static(path.join(__dirname, "public")));
 
-//Express Session middleware
+// Set up session middleware
 app.use(
   session({
     secret: process.env.SECRET_2,
@@ -48,14 +53,14 @@ app.use(
   })
 );
 
-//Express Messages middleware
+// Set up flash messages middleware
 app.use(require("connect-flash")());
 app.use(function (req, res, next) {
   res.locals.messages = require("express-messages")(req, res);
   next();
 });
 
-//Express validator middleware
+// Set up express-validator middleware
 app.use(
   expressValidator({
     errorFormatter: function (param, msg, value) {
@@ -75,24 +80,22 @@ app.use(
   })
 );
 
-//Passport config
+// Configure and use passport
 require("./config/passport")(passport);
-//Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Middleware to set user data for all routes
 app.get("*", function (req, res, next) {
   res.locals.user = req.user || null;
   next();
 });
 
-//Route files
-let articles = require("./routes/articles");
-let users = require("./routes/users");
-app.use("/articles", articles);
-app.use("/users", users);
+// Use articles and users routes
+app.use("/articles", articlesRoutes);
+app.use("/users", usersRoutes);
 
-//Home route
+// Define home route
 app.get("/", function (req, res) {
   Article.find({}, function (err, articles) {
     articles.sort(function (a, b) {
@@ -109,10 +112,10 @@ app.get("/", function (req, res) {
       });
     }
   });
-  //res.send('Hello World!')
 });
 
-//Start Server
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Server started successfully!`);
+// Start the server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server started successfully on port ${PORT}`);
 });
