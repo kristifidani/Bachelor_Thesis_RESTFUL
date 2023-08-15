@@ -70,7 +70,7 @@ These functionalities collectively create an immersive and dynamic user experien
 
 1. **Node.js Installation**: Ensure Node.js is installed from [Node.js](https://nodejs.org/en/download).
 
-2. **Clone the Repository**: Use `git clone https://github.com/kristifidani/Bachelor_Thesis_RESTFUL.git` to clone the repository.
+2. **Clone the Repository**: Use `git clone https://github.com/kristifidani/Community-Driven-Article-Sharing-Web-Application.git` to clone the repository.
 
 3. **Install Dependencies**: Run `npm install` to install project dependencies.
 
